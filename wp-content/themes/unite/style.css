@@ -1524,10 +1524,10 @@ pre{
 	border-radius: 0;
 	overflow-x:hidden;
 	line-height: 0.5;
-}
-pre p{
+	font-family: 'droid_serifregular'!important;
 	color:white;
 }
+
 pre input{
 	color: #333;
 }
