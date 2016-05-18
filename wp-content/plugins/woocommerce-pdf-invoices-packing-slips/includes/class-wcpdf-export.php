@@ -69,6 +69,11 @@ if ( ! class_exists( 'WooCommerce_PDF_Invoices_Export' ) ) {
 				add_filter( 'wpo_wcpdf_use_path', '__return_false' );
 			}
 
+			if ( isset($this->template_settings['currency_font'])) {
+				add_action( 'wpo_wcpdf_before_pdf', array($this, 'use_currency_font' ) );
+			}
+
+
 			// WooCommerce Subscriptions compatibility
 			if ( class_exists('WC_Subscriptions') ) {
 				if ( version_compare( WC_Subscriptions::$version, '2.0', '<' ) ) {
@@ -748,16 +753,20 @@ if ( ! class_exists( 'WooCommerce_PDF_Invoices_Export' ) ) {
 			// Replacements
 			$order_year = date_i18n( 'Y', strtotime( $order_date ) );
 			$order_month = date_i18n( 'm', strtotime( $order_date ) );
+			$order_day = date_i18n( 'd', strtotime( $order_date ) );
 			$invoice_date = get_post_meta($order_id,'_wcpdf_invoice_date',true);
 			$invoice_date = empty($invoice_date) ? current_time('mysql') : $invoice_date;
 			$invoice_year = date_i18n( 'Y', strtotime( $invoice_date ) );
 			$invoice_month = date_i18n( 'm', strtotime( $invoice_date ) );
+			$invoice_day = date_i18n( 'd', strtotime( $invoice_date ) );
 
 			foreach ($formats as $key => $value) {
 				$value = str_replace('[order_year]', $order_year, $value);
 				$value = str_replace('[order_month]', $order_month, $value);
+				$value = str_replace('[order_day]', $order_day, $value);
 				$value = str_replace('[invoice_year]', $invoice_year, $value);
 				$value = str_replace('[invoice_month]', $invoice_month, $value);
+				$value = str_replace('[invoice_day]', $invoice_day, $value);
 				$formats[$key] = $value;
 			}
 
@@ -1175,7 +1184,26 @@ if ( ! class_exists( 'WooCommerce_PDF_Invoices_Export' ) ) {
 				add_filter( $name, 'qtranxf_useCurrentLanguageIfNotFoundUseDefaultLanguage', $priority );
 			}
 		}
-		
+
+		/**
+		 * Use currency symbol font (when enabled in options)
+		 */
+		public function use_currency_font ( $template_type ) {
+			add_filter( 'woocommerce_currency_symbol', array( $this, 'wrap_currency_symbol' ), 10, 2);
+			add_action( 'wpo_wcpdf_custom_styles', array($this, 'currency_symbol_font_styles' ) );
+		}
+
+		public function wrap_currency_symbol( $currency_symbol, $currency ) {
+			$currency_symbol = sprintf( '<span class="wcpdf-currency-symbol">%s</span>', $currency_symbol );
+			return $currency_symbol;
+		}
+
+		public function currency_symbol_font_styles () {
+			?>
+			.wcpdf-currency-symbol { font-family: 'Currencies'; }
+			<?php
+		}
+
 		public function enable_debug () {
 			error_reporting( E_ALL );
 			ini_set( 'display_errors', 1 );

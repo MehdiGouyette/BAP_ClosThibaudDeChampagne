@@ -125,10 +125,10 @@
     // Contact File Input
     $(document).ready(function(){
         $('#fileButton').click(function(){
-            $('#inputFile').click();
+            $('.wpcf7-file').click();
         });
-        $('#inputFile').change(function(){
-            var file = $('#inputFile').val().replace(/C:\\fakepath\\/i, '');
+        $('.wpcf7-file').change(function(){
+            var file = $('.wpcf7-file').val().replace(/C:\\fakepath\\/i, '');
             if (file !== null) {
                 if ($('#inputFileText').val() !== null) {
                     $($('#inputFileText')).empty();

@@ -39,85 +39,24 @@ get_header(); ?>
                 <div class="row">
                     <div class="col-md-10 col-md-offset-1">
                         <div class="doubleBorder"></div>
-<?php
 
-require_once('PHPMailer/class.phpmailer.php');
+                        <?php if ( have_posts() ) : ?>
 
-if (isset($_POST['last-name']) && !empty($_POST['last-name'])
-    && isset($_POST['first-name']) && !empty($_POST['first-name'])
-    && isset($_POST['subject']) && !empty($_POST['subject'])
-    && isset($_POST['email']) && !empty($_POST['email'])
-    && isset($_POST['message']) && !empty($_POST['message']) ) {
+                            <?php/*  Start the Loop */ ?>
+                            <?php while ( have_posts() ) : the_post(); ?>
 
-    try {
-        $email = new PHPMailer();
-        $email->From = 'leclosthibaudtraiteur.fr';
-        $email->FromName = $_POST['fist-name'] . ' ' . $_POST['last-name'];
-        $email->Subject = $_POST['subject'];
-        $email->Body = $_POST['message'];
-        $email->AddAddress('mehdi.gouyette@hotmail.com');
+                                <?php
+                                 the_content();
+                                ?>
 
-        $file_to_attach = $_POST['file'];
-        $email->AddAttachment($file_to_attach, 'Fichier Lié par' . htmlspecialchars($_POST['fist-name']) . ' ' . htmlspecialchars($_POST['last-name']));
+                            <?php endwhile; ?>
 
-        $email->Send();
+                        <?php else : ?>
 
-        echo ' <h5 style="color:green;">Votre email a bien été envoyé!</h5>';
+                            <?php get_template_part( 'content', 'none' ); ?>
 
-    } catch (phpmailerException $e) {
-
-        echo ' <h5 style="color:red;">Votre email n\'a pas pu être envoyé! Vérifiez que vous avez bien rempli tous les champs.</h5>';
-
-    } catch (Exception $e){
-
-        echo ' <h5 style="color:red;">Votre email n\'a pas pu être envoyé! Vérifiez que vous avez bien rempli tous les champs.</h5>';
-
-    }
-}
-?>
-                        <form action="<?php bloginfo('template_directory'); ?>/mail.php" method="post">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <label for="last-name">Votre Nom</label>
-                                    <br />
-                                    <input type="text" name="last-name" placeholder="Votre Nom"/>
-                                    <br /><br />
-                                    <label for="first-name">Votre Prénom</label>
-                                    <br />
-                                    <input type="text" name="first-name" placeholder="Votre Prénom"/>
-                                    <br /><br />
-                                </div>
-                                <div class="col-md-6">
-                                    <label for="subject">Objet</label>
-                                    <br />
-                                    <input type="text" name="subject" placeholder="Objet"/>
-                                    <br /><br />
-                                    <label for="email">Votre E-mail</label>
-                                    <br />
-                                    <input type="text" name="email" placeholder="Votre E-mail"/>
-                                    <br /><br />
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <label for="message">Votre Message</label>
-                                    <textarea name="message" placeholder="Votre Message"></textarea>
-                                    <br />
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-1">
-                                    <input id="inputFile" type="file" name="file"/>
-                                    <div id="fileButton">
-                                        <i class="fa fa-plus fa-2x"></i>
-                                    </div>
-                                </div>
-                                <div class="col-md-5">
-                                    <label class="labelFile">Ajouter une pièce jointe <label id="inputFileText">Aucun Fichier Sélectionné</label></label>
-                                </div>
-                                <div class="col-md-3 col-md-offset-2"><button type="submit" class="submitContact">ENVOYER</button></div>
-                            </div>
-                        </form>
+                        <?php endif; ?>
+                        
                         <div class="doubleBorder"></div>
                     </div>
                 </div>
